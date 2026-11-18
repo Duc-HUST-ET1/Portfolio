@@ -1,0 +1,15 @@
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; background: var(--color-background); }
+body { min-width: 320px; margin: 0; background: var(--color-background); color: var(--color-text); }
+body, button, input { font: inherit; }
+button, a, input { touch-action: manipulation; }
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 0.08em; }
+button { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+::placeholder { color: var(--color-text-subtle); opacity: 1; }
+.skip-link { position: fixed; z-index: 20; top: 0.75rem; left: 0.75rem; transform: translateY(-160%); padding: 0.75rem 1rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-small); background: var(--color-surface); color: var(--color-text); }
+.skip-link:focus { transform: translateY(0); }
+main:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

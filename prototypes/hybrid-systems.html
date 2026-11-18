@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F5F5F0" />
+    <title>Hybrid Systems Engineer — Portfolio Prototype</title>
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        font-optical-sizing: auto;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        --space-1: .4rem;
+        --space-2: .7rem;
+        --space-3: 1rem;
+        --space-4: 1.4rem;
+        --space-5: 2rem;
+        --space-6: 3rem;
+        --space-7: 4.5rem;
+        --space-8: 6rem;
+        --content-width: 1200px;
+        --reading-width: 68ch;
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --accent: #D97843;
+        --accent-text: #A4441F;
+        --focus: #A7461E;
+        --surface: #FFFFFF;
+        --text: #24322e;
+        --line: #d9ded7;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { min-width: 320px; margin: 0; }
+      button, a, summary { touch-action: manipulation; }
+      button { font: inherit; }
+      a { color: inherit; text-underline-offset: .22em; text-decoration-thickness: .08em; }
+      a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+      .skip-link { position: fixed; z-index: 20; top: .75rem; left: .75rem; transform: translateY(-160%); padding: .75rem 1rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); color: var(--text); }
+      .skip-link:focus { transform: translateY(0); }
+      .page { min-height: 100vh; background: var(--background); color: var(--text); }
+      .page[data-theme="light"] {
+        color-scheme: light;
+        --background: #F5F5F0;
+        --surface: #FFFFFF;
+        --surface-muted: #EAECE5;
+        --primary: #203D35;
+        --accent: #D97843;
+        --accent-text: #A4441F;
+        --accent-ink: #fffaf4;
+        --text: #24322e;
+        --muted: #596761;
+        --subtle: #66736D;
+        --line: #d9ded7;
+        --line-strong: #b9c4bc;
+        --diagram-grid: rgba(32, 61, 53, .08);
+        --diagram-line: #678176;
+        --soft-accent: #f5e7dc;
+        --focus: #A7461E;
+      }
+      .page[data-theme="dark"] {
+        color-scheme: dark;
+        --background: #151A19;
+        --surface: #202927;
+        --surface-muted: #29322F;
+        --primary: #9DBDAE;
+        --accent: #E49A69;
+        --accent-text: #E49A69;
+        --accent-ink: #211711;
+        --text: #e8eeea;
+        --muted: #bbc8c1;
+        --subtle: #99aaa1;
+        --line: #394540;
+        --line-strong: #53635b;
+        --diagram-grid: rgba(157, 189, 174, .085);
+        --diagram-line: #8aa99a;
+        --soft-accent: #3a3028;
+        --focus: #f2b88f;
+      }
+      .page a, .page button, .page summary { -webkit-tap-highlight-color: transparent; }
+      .site-header { position: sticky; z-index: 10; top: 0; border-bottom: 1px solid var(--line); background: var(--background); }
+      .header-inner { display: flex; width: min(100% - 3rem, var(--content-width)); min-height: 76px; align-items: center; justify-content: space-between; gap: 1.25rem; margin-inline: auto; }
+      .identity { display: inline-flex; min-width: 0; align-items: center; gap: .7rem; color: var(--primary); font-size: .95rem; font-weight: 760; letter-spacing: -.025em; text-decoration: none; white-space: nowrap; }
+      .identity-mark { display: grid; width: 31px; height: 31px; place-items: center; border: 1px solid var(--line-strong); border-radius: 9px 3px 9px 3px; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .72rem; }
+      .site-nav { display: flex; align-items: center; gap: clamp(.65rem, 1.7vw, 1.45rem); }
+      .site-nav a { color: var(--muted); font-size: .82rem; font-weight: 590; text-decoration: none; }
+      .header-tools { display: flex; flex: 0 0 auto; align-items: center; gap: .6rem; }
+      .theme-button, .menu-button { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; gap: .5rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); cursor: pointer; transition: transform 140ms var(--ease-out), border-color 140ms var(--ease-out); }
+      .theme-button { padding: 0 .8rem; font-size: .78rem; font-weight: 650; }
+      .menu-button { display: none; width: 44px; padding: .55rem; }
+      .menu-lines, .menu-lines::before, .menu-lines::after { display: block; width: 17px; height: 2px; border-radius: 4px; background: currentColor; content: ""; }
+      .menu-lines { position: relative; }
+      .menu-lines::before, .menu-lines::after { position: absolute; left: 0; }
+      .menu-lines::before { top: -5px; }
+      .menu-lines::after { top: 5px; }
+      .theme-button:active, .menu-button:active, .button:active { transform: scale(.97); }
+
+      .content { width: min(100% - 3rem, var(--content-width)); margin-inline: auto; }
+      .hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(430px, 1.1fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); padding-block: clamp(4rem, 8vw, 7.2rem); }
+      .eyebrow, .section-index, .meta-label { color: var(--accent-text); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .72rem; font-weight: 700; letter-spacing: .09em; line-height: 1.5; text-transform: uppercase; }
+      .hero h1 { max-width: 11ch; margin: .9rem 0 .65rem; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: clamp(3.4rem, 7.3vw, 6.8rem); font-weight: 500; line-height: .94; letter-spacing: -.07em; overflow-wrap: anywhere; }
+      .hero-role { max-width: 30rem; margin: 1rem 0; color: var(--text); font-size: clamp(1rem, 1.7vw, 1.25rem); font-weight: 670; letter-spacing: -.02em; }
+      .hero-intro { max-width: 55ch; margin: 1rem 0 0; color: var(--muted); font-size: 1.02rem; line-height: 1.8; }
+      .hero-intro strong { color: var(--primary); font-weight: 650; }
+      .hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.65rem; }
+      .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .6rem; padding: .68rem 1rem; border: 1px solid var(--line-strong); border-radius: .55rem; background: var(--surface); color: var(--primary); font-size: .88rem; font-weight: 680; text-decoration: none; transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out), border-color 140ms var(--ease-out); }
+      .button-primary { border-color: var(--primary); background: var(--primary); color: var(--background); }
+      .button-arrow { color: var(--accent); font-size: 1.05rem; }
+      .button-primary .button-arrow { color: inherit; }
+
+      .diagram-panel { min-width: 0; padding: clamp(1rem, 2.3vw, 1.6rem); border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); box-shadow: 0 18px 50px rgba(22, 42, 34, .055); }
+      .diagram-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: .1rem .15rem 1rem; }
+      .diagram-head h2 { margin: 0; color: var(--primary); font-size: .9rem; font-weight: 710; letter-spacing: -.01em; }
+      .diagram-note { max-width: 18ch; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; line-height: 1.5; text-align: right; text-transform: uppercase; }
+      .diagram-canvas { overflow: hidden; border: 1px solid var(--line); border-radius: .65rem; background-color: var(--surface-muted); background-image: linear-gradient(var(--diagram-grid) 1px, transparent 1px), linear-gradient(90deg, var(--diagram-grid) 1px, transparent 1px); background-size: 24px 24px; }
+      .diagram-flow { position: relative; display: grid; min-height: 334px; grid-template-columns: minmax(0, 1.2fr) minmax(170px, .8fr); grid-template-rows: repeat(3, minmax(70px, 1fr)); align-items: stretch; gap: .8rem; padding: .9rem; }
+      .diagram-inputs { z-index: 1; display: grid; grid-column: 1; grid-row: 1 / span 3; grid-template-rows: repeat(3, minmax(70px, 1fr)); gap: .8rem; }
+      .diagram-node { display: flex; min-width: 0; flex-direction: column; justify-content: center; padding: .65rem .8rem; border: 1px solid var(--line-strong); border-radius: .65rem; background: var(--surface); }
+      .diagram-node.output { z-index: 1; grid-column: 2; grid-row: 1 / span 3; align-self: center; min-height: 100px; border-color: var(--primary); background: var(--primary); }
+      .node-number { color: var(--accent-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; font-weight: 730; letter-spacing: .06em; }
+      .node-title { margin-top: .2rem; color: var(--text); font-size: .94rem; font-weight: 720; line-height: 1.35; }
+      .node-detail { margin-top: .2rem; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; line-height: 1.4; overflow-wrap: anywhere; }
+      .diagram-node.output .node-title { color: var(--background); }
+      .diagram-node.output .node-number { color: var(--background); }
+      .diagram-node.output .node-detail { color: var(--surface-muted); }
+      .diagram-edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+      .diagram-edges path { fill: none; stroke: var(--diagram-line); stroke-width: 1.5; opacity: 0; animation: connect 220ms var(--ease-out) forwards; }
+      .diagram-edges path:nth-of-type(2) { animation-delay: 60ms; }
+      .diagram-edges path:nth-of-type(3) { animation-delay: 120ms; }
+      .diagram-edges-mobile { display: none; }
+      .diagram-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem; padding: .85rem .15rem .1rem; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .72rem; line-height: 1.5; }
+      @keyframes connect { to { opacity: 1; } }
+
+      .content-section { padding-block: clamp(3.5rem, 6vw, 5.5rem); border-top: 1px solid var(--line); scroll-margin-top: 95px; }
+      .section-heading-row { display: grid; grid-template-columns: minmax(8rem, .28fr) minmax(0, 1fr); align-items: start; gap: 1.5rem; margin-bottom: 2rem; }
+      .section-index { padding-top: .55rem; }
+      .section-heading { max-width: 20ch; margin: 0; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 500; line-height: 1.05; letter-spacing: -.055em; }
+      .section-summary { max-width: var(--reading-width); margin: .8rem 0 0; color: var(--muted); line-height: 1.75; }
+      .section-copy { max-width: var(--reading-width); color: var(--muted); line-height: 1.8; }
+      .about-layout { display: grid; grid-template-columns: minmax(11rem, .55fr) minmax(0, 1.45fr); gap: clamp(2rem, 8vw, 8rem); }
+      .about-lead { margin: 0; color: var(--primary); font-size: clamp(1.2rem, 2.1vw, 1.65rem); font-weight: 630; line-height: 1.5; letter-spacing: -.025em; }
+      .interest-row { display: grid; grid-template-columns: minmax(8rem, .35fr) minmax(0, 1fr); gap: .75rem 1.5rem; padding: .8rem 0; border-top: 1px solid var(--line); }
+      .interest-row dt { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .71rem; letter-spacing: .05em; text-transform: uppercase; }
+      .interest-row dd { margin: 0; color: var(--text); line-height: 1.65; }
+      .skills-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 1.5rem; }
+      .skill-item { min-width: 0; padding: 1.15rem 0 1.25rem; border-top: 1px solid var(--line); }
+      .skill-item h3 { margin: 0; color: var(--primary); font-size: .96rem; font-weight: 690; line-height: 1.4; }
+      .skill-item p { margin: .5rem 0 0; color: var(--muted); font-size: .88rem; line-height: 1.65; overflow-wrap: anywhere; }
+      .skill-number { display: inline-block; margin-right: .5rem; color: var(--accent-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .71rem; font-weight: 700; }
+
+      .projects-intro { max-width: var(--reading-width); margin: -1rem 0 1.8rem; color: var(--muted); line-height: 1.75; }
+      .project-list { display: grid; gap: .9rem; }
+      .project-card { min-width: 0; border: 1px solid var(--line); border-radius: .8rem; background: var(--surface); }
+      .project-card:focus-within { border-color: var(--focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--focus) 23%, transparent); }
+      .project-card summary { display: grid; grid-template-columns: minmax(5rem, .18fr) minmax(0, 1fr) auto; align-items: center; gap: 1rem; min-height: 84px; padding: 1rem 1.2rem; border-radius: inherit; color: var(--text); cursor: pointer; list-style: none; }
+      .project-card summary::-webkit-details-marker { display: none; }
+      .project-card summary::after { color: var(--accent); content: "+"; font-size: 1.35rem; }
+      .project-card[open] summary::after { content: "−"; }
+      .project-index { color: var(--accent-text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; font-weight: 700; }
+      .project-title { min-width: 0; }
+      .project-title strong { display: block; color: var(--primary); font-size: 1.05rem; line-height: 1.4; overflow-wrap: anywhere; }
+      .project-title small { display: block; margin-top: .25rem; color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; letter-spacing: .04em; text-transform: uppercase; }
+      .project-content { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 1.5rem 3rem; padding: .2rem 1.2rem 1.5rem; }
+      .project-description { max-width: 54ch; margin: 0; color: var(--muted); line-height: 1.75; }
+      .project-fields { display: grid; gap: .6rem; margin: 0; }
+      .project-fields div { display: grid; grid-template-columns: minmax(7rem, .32fr) minmax(0, 1fr); gap: .5rem 1rem; padding-top: .55rem; border-top: 1px solid var(--line); }
+      .project-fields dt { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .69rem; letter-spacing: .04em; text-transform: uppercase; }
+      .project-fields dd { min-width: 0; margin: 0; color: var(--text); font-size: .84rem; line-height: 1.55; overflow-wrap: anywhere; }
+      .placeholder { color: var(--muted); font-style: italic; }
+
+      .research-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, .75fr); gap: 1.5rem; }
+      .research-block { min-width: 0; padding: 1.35rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--surface); }
+      .research-block.secondary { background: var(--surface-muted); }
+      .research-block h3 { margin: .45rem 0 .7rem; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-size: 1.4rem; font-weight: 500; line-height: 1.25; overflow-wrap: anywhere; }
+      .research-block p { color: var(--muted); line-height: 1.7; }
+      .timeline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+      .timeline-entry { min-width: 0; padding: 1rem 0 0; border-top: 2px solid var(--primary); }
+      .timeline-entry h3 { margin: .6rem 0 .4rem; color: var(--primary); font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+      .timeline-entry p { color: var(--muted); line-height: 1.65; }
+      .contact-panel { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 2rem; align-items: start; padding: clamp(1.3rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: .9rem; background: var(--surface-muted); }
+      .contact-panel .section-heading { font-size: clamp(1.8rem, 3vw, 2.5rem); }
+      .contact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+      .contact-item { min-width: 0; padding-top: .6rem; border-top: 1px solid var(--line-strong); }
+      .contact-item .meta-label { display: block; margin-bottom: .45rem; font-size: .66rem; }
+      .contact-item span { color: var(--text); font-size: .84rem; line-height: 1.55; overflow-wrap: anywhere; }
+      .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 2rem; padding: 1.4rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .78rem; line-height: 1.6; }
+      .site-footer p { margin: 0; }
+
+      /* Scroll entrances are enabled only after IntersectionObserver is ready. */
+      @media (prefers-reduced-motion: no-preference) {
+        #main-content[data-reveal-ready="true"] > .content-section:not([data-entered]) { transform: translateY(8px); opacity: 0; }
+        #main-content[data-reveal-ready="true"] > .content-section { transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out); }
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .site-nav a:hover { color: var(--primary); }
+        .button:hover { border-color: var(--accent); }
+        .button-primary:hover { background: color-mix(in srgb, var(--primary) 90%, var(--accent)); }
+        .project-card:hover { border-color: var(--line-strong); box-shadow: 0 10px 28px rgba(22, 42, 34, .06); }
+      }
+      @media (max-width: 980px) {
+        .header-inner, .content { width: min(100% - 2.5rem, var(--content-width)); }
+        .site-nav { gap: .7rem; }
+        .site-nav a { font-size: .76rem; }
+        .hero { grid-template-columns: minmax(0, .85fr) minmax(360px, 1.15fr); gap: 2rem; }
+      }
+      @media (max-width: 760px) {
+        .header-inner { min-height: 68px; }
+        .menu-button { display: inline-flex; }
+        .site-nav { position: absolute; top: calc(100% + 1px); right: 0; left: 0; display: none; align-items: stretch; gap: 0; padding: .45rem 1.25rem 1rem; border-bottom: 1px solid var(--line); background: var(--background); }
+        .site-nav[data-open="true"] { display: grid; }
+        .site-nav a { padding: .8rem .15rem; border-bottom: 1px solid var(--line); font-size: .92rem; }
+        .hero { grid-template-columns: minmax(0, 1fr); gap: 2rem; padding-block: 3.5rem 4rem; }
+        .hero h1 { max-width: 12ch; }
+        .diagram-panel { width: 100%; }
+        .skills-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .about-layout { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; }
+        .about-lead { max-width: 34ch; }
+      }
+      @media (max-width: 560px) {
+        .header-inner, .content { width: min(100% - 2rem, var(--content-width)); }
+        .identity { gap: .5rem; font-size: .86rem; }
+        .identity-mark { width: 28px; height: 28px; }
+        .theme-button { min-width: 44px; padding-inline: .65rem; font-size: .72rem; }
+        .header-tools { gap: .4rem; }
+        .hero { padding-block: 3rem 3.5rem; }
+        .hero h1 { font-size: clamp(3.2rem, 16vw, 5.2rem); }
+        .hero-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .button { width: 100%; padding-inline: .65rem; font-size: .82rem; }
+        .diagram-panel { padding: .8rem; border-radius: .75rem; }
+        .diagram-head { flex-direction: column; gap: .35rem; }
+        .diagram-note { max-width: none; text-align: left; }
+        .diagram-flow { min-height: 0; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 38px auto; gap: 0; padding: .75rem; }
+        .diagram-inputs { grid-column: 1; grid-row: 1; grid-template-rows: repeat(3, minmax(68px, auto)); gap: .6rem; }
+        .diagram-node.output { grid-column: 1; grid-row: 3; min-height: 72px; }
+        .diagram-edges-desktop { display: none; }
+        .diagram-edges-mobile { display: block; grid-row: 2; }
+        .node-title { font-size: .9rem; }
+        .node-detail { font-size: .75rem; }
+        .section-heading-row { grid-template-columns: minmax(0, 1fr); gap: .45rem; margin-bottom: 1.4rem; }
+        .section-index { padding-top: 0; }
+        .content-section { padding-block: 3rem; }
+        .skills-grid { grid-template-columns: minmax(0, 1fr); }
+        .interest-row { grid-template-columns: minmax(0, 1fr); gap: .3rem; }
+        .project-card summary { grid-template-columns: minmax(2.5rem, .16fr) minmax(0, 1fr) auto; gap: .65rem; padding: .9rem; }
+        .project-content { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding: 0 .9rem 1.1rem; }
+        .project-fields div { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
+        .research-layout, .timeline, .contact-panel { grid-template-columns: minmax(0, 1fr); }
+        .contact-grid { grid-template-columns: minmax(0, 1fr); }
+        .site-footer { flex-direction: column; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation: none !important; }
+        .diagram-edges path { opacity: 1; }
+        #main-content[data-reveal-ready="true"] > .content-section:not([data-entered]) { transform: none; opacity: 1; }
+      }
+
+      /* Prototype picker chrome: verbatim styles from prototype/PICKER.md. */
+      .proto-picker {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(10, 10, 10, 0.82);
+        -webkit-backdrop-filter: blur(12px) saturate(1.4);
+        backdrop-filter: blur(12px) saturate(1.4);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+          0 8px 24px rgba(0, 0, 0, 0.24),
+          0 2px 6px rgba(0, 0, 0, 0.12);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .proto-picker-highlight {
+        position: absolute;
+        top: 4px;
+        left: 0;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        will-change: transform;
+      }
+      .proto-picker[data-ready] .proto-picker-highlight {
+        transition:
+          transform 250ms cubic-bezier(0.23, 1, 0.32, 1),
+          width 250ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .proto-picker[data-ready] .proto-picker-highlight { transition: none; }
+      }
+      .proto-picker-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.55);
+        font: inherit;
+        cursor: pointer;
+        transition: color 150ms ease-out;
+      }
+      .proto-picker-item:hover { color: rgba(255, 255, 255, 0.85); }
+      .proto-picker-item:active { transform: scale(0.97); }
+      .proto-picker-item:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.4);
+        outline-offset: 2px;
+      }
+      .proto-picker-item[data-active] { color: #fff; }
+      .proto-picker-divider {
+        width: 1px;
+        height: 16px;
+        margin: 0 4px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .proto-picker-replay { padding: 0 10px; font-size: 14px; }
+      .proto-picker[data-position="top"] { bottom: auto; top: 24px; }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="stage"></div>
+    <nav class="proto-picker" aria-label="Prototype variants">
+      <span class="proto-picker-highlight" aria-hidden="true"></span>
+      <button class="proto-picker-item" data-active aria-current="true" type="button">Hybrid Systems</button>
+      <span class="proto-picker-divider" aria-hidden="true"></span>
+      <button class="proto-picker-item proto-picker-replay" type="button" aria-label="Replay animation (R)">↻</button>
+    </nav>
+    <script>
+      const stage = document.getElementById('stage');
+      const picker = document.querySelector('.proto-picker');
+      const pickerItem = picker.querySelector('.proto-picker-item');
+      const replayButton = picker.querySelector('.proto-picker-replay');
+      const highlight = picker.querySelector('.proto-picker-highlight');
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const pageMarkup = () => `
+        <div class="page" data-theme="${getTheme()}">
+          <header class="site-header">
+            <div class="header-inner">
+              <a class="identity" href="#top" aria-label="[Your Name], return to top"><span class="identity-mark" aria-hidden="true">YS</span><span>[Your Name]</span></a>
+              <nav class="site-nav" id="primary-navigation" aria-label="Main navigation">
+                <a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#research">Research</a><a href="#education">Education</a><a href="#contact">Contact</a>
+              </nav>
+              <div class="header-tools">
+                <button class="theme-button" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark theme">Dark</button>
+                <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation"><span class="menu-lines" aria-hidden="true"></span></button>
+              </div>
+            </div>
+          </header>
+          <main class="content" id="main-content" tabindex="-1">
+            <section class="hero" id="top" aria-labelledby="hero-title">
+              <div class="hero-copy-block">
+                <p class="eyebrow">PORTFOLIO / SYSTEMS ENGINEERING</p>
+                <h1 id="hero-title">[Your Name]</h1>
+                <p class="hero-role">DevOps Engineer / System Engineer</p>
+                <p class="hero-intro"><strong>Engineering dependable foundations for software.</strong> [Add a concise introduction to your experience, the systems you care about, and the problems you want to solve.]</p>
+                <div class="hero-actions"><a class="button button-primary" href="#projects">View projects <span class="button-arrow" aria-hidden="true">↘</span></a><a class="button" href="#contact">Contact <span class="button-arrow" aria-hidden="true">↗</span></a></div>
+              </div>
+              <figure class="diagram-panel">
+                <figcaption class="diagram-head"><h2>Systems thinking</h2><span class="diagram-note">Conceptual relationship<br />not a deployment diagram</span></figcaption>
+                <div class="diagram-canvas">
+                  <div class="diagram-flow" role="group" aria-label="Conceptual relationship: network, systems, and software support reliable solutions">
+                    <svg class="diagram-edges diagram-edges-desktop" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="flow-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M1 1 L5 3 L1 5" fill="none" stroke="var(--diagram-line)" stroke-width="1" /></marker></defs><path d="M59 18 C64 18 64 42 68 50" marker-end="url(#flow-arrow)"/><path d="M59 50 H68" marker-end="url(#flow-arrow)"/><path d="M59 82 C64 82 64 58 68 50" marker-end="url(#flow-arrow)"/></svg>
+                    <div class="diagram-inputs"><div class="diagram-node"><span class="node-number">01 / FOUNDATION</span><strong class="node-title">Network</strong><span class="node-detail">connectivity · boundaries</span></div><div class="diagram-node"><span class="node-number">02 / FOUNDATION</span><strong class="node-title">Systems</strong><span class="node-detail">compute · operating systems</span></div><div class="diagram-node"><span class="node-number">03 / FOUNDATION</span><strong class="node-title">Software</strong><span class="node-detail">delivery · automation</span></div></div>
+                    <div class="diagram-node output"><span class="node-number">ENGINEERING OUTCOME</span><strong class="node-title">Reliable solutions</strong><span class="node-detail">designed with care</span></div>
+                    <svg class="diagram-edges diagram-edges-mobile" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="flow-arrow-mobile" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M1 1 L5 3 L1 5" fill="none" stroke="var(--diagram-line)" stroke-width="1" /></marker></defs><path d="M50 66 V77" marker-end="url(#flow-arrow-mobile)"/></svg>
+                  </div>
+                </div>
+                <div class="diagram-foot"><span>NETWORK + SYSTEMS + SOFTWARE</span><span>→ RELIABLE SOLUTIONS</span></div>
+              </figure>
+            </section>
+
+            <section class="content-section" id="about" aria-labelledby="about-title">
+              <div class="section-heading-row"><p class="section-index">01 / About</p><div><h2 class="section-heading" id="about-title">A systems-minded engineering practice.</h2><p class="section-summary">[Introduce your background and the way you approach engineering work. Keep the final version grounded in your actual experience.]</p></div></div>
+              <div class="about-layout"><p class="about-lead">Build a concise connection between your interests, your work, and the direction you want to grow.</p><div><p class="section-copy">[Describe what draws you to infrastructure, automation, software delivery, or operations. Add concrete context from your own projects or research when available.]</p><dl><div class="interest-row"><dt>Technical interests</dt><dd>[Infrastructure, Linux, networking, automation, delivery, reliability — retain only what reflects your interests.]</dd></div><div class="interest-row"><dt>Career direction</dt><dd>[The DevOps Engineer / System Engineer role and environment you are seeking.]</dd></div><div class="interest-row"><dt>Working principles</dt><dd>[How you think about reliability, documentation, collaboration, and learning.]</dd></div></dl></div></div>
+            </section>
+
+            <section class="content-section" id="skills" aria-labelledby="skills-title">
+              <div class="section-heading-row"><p class="section-index">02 / Capability areas</p><div><h2 class="section-heading" id="skills-title">Technical skills</h2><p class="section-summary">List tools and methods you can discuss with confidence. Describe scope and use rather than assigning unsupported proficiency ratings.</p></div></div>
+              <div class="skills-grid">
+                <article class="skill-item"><h3><span class="skill-number">01</span>Infrastructure / Cloud</h3><p>[Platforms and infrastructure tools used; add context or project references.]</p></article>
+                <article class="skill-item"><h3><span class="skill-number">02</span>Linux / Operating Systems</h3><p>[Distributions, administration tasks, and systems experience.]</p></article>
+                <article class="skill-item"><h3><span class="skill-number">03</span>Networking</h3><p>[Protocols, services, and network troubleshooting experience.]</p></article>
+                <article class="skill-item"><h3><span class="skill-number">04</span>DevOps / CI/CD</h3><p>[Delivery workflows, automation, and infrastructure as code.]</p></article>
+                <article class="skill-item"><h3><span class="skill-number">05</span>Programming / Automation</h3><p>[Languages and scripts used in real work.]</p></article>
+                <article class="skill-item"><h3><span class="skill-number">06</span>Monitoring / Reliability</h3><p>[Observability, incident response, and reliability practices.]</p></article>
+              </div>
+            </section>
+
+            <section class="content-section" id="projects" aria-labelledby="projects-title">
+              <div class="section-heading-row"><p class="section-index">03 / Selected work</p><div><h2 class="section-heading" id="projects-title">Selected projects</h2><p class="section-summary">Show the problem, decisions, and your contribution. Add outcomes only when they are verified and attributable.</p></div></div>
+              <p class="projects-intro">Project records are structured to make engineering choices inspectable without overstating results. Expand an entry to see the content fields to complete.</p>
+              <div class="project-list">
+                <details class="project-card" open><summary><span class="project-index">PROJECT / 01</span><span class="project-title"><strong>[Project Name — describe an infrastructure or automation project]</strong><small>[Category or problem area]</small></span></summary><div class="project-content"><p class="project-description">[Describe the real context, problem, constraints, and why the work mattered. Avoid claiming deployment or production use unless verified.]</p><dl class="project-fields"><div><dt>Approach</dt><dd>[Technical approach and key engineering decisions]</dd></div><div><dt>Contribution</dt><dd>[Your specific work; clarify team context]</dd></div><div><dt>Technology</dt><dd>[Verified technologies used]</dd></div><div><dt>Evidence</dt><dd>[Repository URL] · [Demo URL, if available]</dd></div></dl></div></details>
+                <details class="project-card" open><summary><span class="project-index">PROJECT / 02</span><span class="project-title"><strong>[Project Name]</strong><small>[Category or problem area]</small></span></summary><div class="project-content"><p class="project-description">[Describe a second real project, including its context and constraints. Remove this entry if there is no second project to present.]</p><dl class="project-fields"><div><dt>Approach</dt><dd>[Technical approach and tradeoffs]</dd></div><div><dt>Contribution</dt><dd>[Your contribution and collaborators, if applicable]</dd></div><div><dt>Technology</dt><dd>[Verified technologies used]</dd></div><div><dt>Evidence</dt><dd>[Repository URL] · [Demo URL, if available]</dd></div></dl></div></details>
+              </div>
+            </section>
+
+            <section class="content-section" id="research" aria-labelledby="research-title">
+              <div class="section-heading-row"><p class="section-index">04 / Research</p><div><h2 class="section-heading" id="research-title">Research &amp; technical interests</h2><p class="section-summary">Separate completed work from ongoing inquiry, and make the objective and method clear.</p></div></div>
+              <div class="research-layout"><article class="research-block"><p class="eyebrow">[Status: in progress / submitted / published]</p><h3>[Research topic]</h3><p>[State the research objective, question, and why it matters.]</p><dl class="project-fields"><div><dt>Objective</dt><dd>[Research objective]</dd></div><div><dt>Method</dt><dd>[Methodology, material, or evaluation approach]</dd></div><div><dt>Contribution</dt><dd>[Your contribution and collaborators, if applicable]</dd></div><div><dt>Resources</dt><dd>[Paper / poster / code URL]</dd></div></dl></article><aside class="research-block secondary"><p class="eyebrow">TECHNICAL INTERESTS</p><h3>Questions worth exploring.</h3><p>[Add topics you are actively learning about or investigating. Distinguish exploration from completed research.]</p></aside></div>
+            </section>
+
+            <section class="content-section" id="education" aria-labelledby="education-title">
+              <div class="section-heading-row"><p class="section-index">05 / Background</p><div><h2 class="section-heading" id="education-title">Education &amp; experience</h2><p class="section-summary">A factual timeline gives readers context for your projects and current direction.</p></div></div>
+              <div class="timeline"><article class="timeline-entry"><p class="meta-label">[Year – Year]</p><h3>[Education / qualification]</h3><p>[Institution, program, and relevant detail. Include only confirmed information.]</p></article><article class="timeline-entry"><p class="meta-label">[Year – Year]</p><h3>[Role / experience]</h3><p>[Organization, scope, and responsibilities. Remove this entry if it does not apply.]</p></article></div>
+            </section>
+
+            <section class="content-section" id="contact" aria-labelledby="contact-title">
+              <div class="contact-panel"><div><p class="section-index">06 / Contact</p><h2 class="section-heading" id="contact-title">Let’s talk about systems.</h2><p class="section-copy">[Add a short invitation and the types of opportunities or technical conversations you welcome.]</p></div><div class="contact-grid"><div class="contact-item"><span class="meta-label">Email</span><span>[Email address]</span></div><div class="contact-item"><span class="meta-label">GitHub</span><span>[GitHub profile URL]</span></div><div class="contact-item"><span class="meta-label">LinkedIn</span><span>[LinkedIn profile URL]</span></div></div></div>
+            </section>
+          </main>
+          <footer class="content site-footer"><p>[Your Name] · DevOps Engineer / System Engineer</p><p>Replace placeholders with verified information before publishing.</p></footer>
+        </div>`;
+
+      function readSession(key) { try { return sessionStorage.getItem(key); } catch { return null; } }
+      function writeSession(key, value) { try { sessionStorage.setItem(key, value); } catch { /* Local-file storage may be unavailable; the current page remains usable. */ } }
+      function getTheme() { return readSession('hybrid-prototype-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+      function syncThemeColor(theme = getTheme()) { themeColor.content = theme === 'dark' ? '#151A19' : '#F5F5F0'; }
+      function moveHighlight() {
+        highlight.style.width = pickerItem.offsetWidth + 'px';
+        highlight.style.transform = `translateX(${pickerItem.offsetLeft}px)`;
+      }
+      function mount() {
+        stage.innerHTML = pageMarkup();
+        const page = stage.querySelector('.page');
+        page.dataset.theme = getTheme();
+        syncThemeColor(getTheme());
+        page.querySelector('[data-theme-toggle]').setAttribute('aria-pressed', String(getTheme() === 'dark'));
+        page.querySelector('[data-theme-toggle]').setAttribute('aria-label', `Switch to ${getTheme() === 'dark' ? 'light' : 'dark'} theme`);
+        page.querySelector('[data-theme-toggle]').textContent = getTheme() === 'dark' ? 'Light' : 'Dark';
+        prepareSectionEntrances(page);
+      }
+      function setActive() {
+        pickerItem.setAttribute('data-active', '');
+        pickerItem.setAttribute('aria-current', 'true');
+        moveHighlight();
+        writeSession('hybrid-prototype-variant', '1');
+        const url = new URL(location);
+        url.searchParams.set('v', '1');
+        try { history.replaceState(null, '', url); } catch { /* Some file:// browsers disallow History API URL updates. */ }
+      }
+      function prepareSectionEntrances(page) {
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced || !('IntersectionObserver' in window)) return;
+        const main = page.querySelector('#main-content');
+        const sections = [...main.querySelectorAll(':scope > .content-section')];
+        main.dataset.revealReady = 'true';
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.dataset.entered = 'true';
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+        sections.forEach((section) => observer.observe(section));
+      }
+      function toggleTheme() {
+        const nextTheme = getTheme() === 'dark' ? 'light' : 'dark';
+        writeSession('hybrid-prototype-theme', nextTheme);
+        const page = stage.querySelector('.page');
+        page.dataset.theme = nextTheme;
+        const button = page.querySelector('[data-theme-toggle]');
+        button.setAttribute('aria-pressed', String(nextTheme === 'dark'));
+        button.setAttribute('aria-label', `Switch to ${nextTheme === 'dark' ? 'light' : 'dark'} theme`);
+        button.textContent = nextTheme === 'dark' ? 'Light' : 'Dark';
+        syncThemeColor(nextTheme);
+      }
+      document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-theme-toggle]')) toggleTheme();
+        const menuButton = event.target.closest('[data-menu-toggle]');
+        if (menuButton) {
+          const menu = document.getElementById('primary-navigation');
+          const open = menuButton.getAttribute('aria-expanded') !== 'true';
+          menuButton.setAttribute('aria-expanded', String(open));
+          menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+          menu.dataset.open = String(open);
+        }
+        if (event.target.closest('.site-nav a')) {
+          const menu = document.getElementById('primary-navigation');
+          const button = stage.querySelector('[data-menu-toggle]');
+          if (menu && button) {
+            menu.dataset.open = 'false';
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', 'Open navigation');
+          }
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) || event.target.isContentEditable) return;
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        if (event.key === '1' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') setActive();
+        else if (event.key === 'r' || event.key === 'R') mount();
+        else if (event.key === 'Escape') {
+          const menu = document.getElementById('primary-navigation');
+          const button = stage.querySelector('[data-menu-toggle]');
+          if (menu && button?.getAttribute('aria-expanded') === 'true') {
+            menu.dataset.open = 'false';
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', 'Open navigation');
+            button.focus();
+          }
+        }
+      });
+      pickerItem.addEventListener('click', setActive);
+      replayButton.addEventListener('click', mount);
+      window.addEventListener('resize', moveHighlight);
+      setActive();
+      mount();
+      requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+    </script>
+  </body>
+</html>

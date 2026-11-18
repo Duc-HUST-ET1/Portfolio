@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f4f5f7" />
+    <title>Portfolio design concepts</title>
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color-scheme: light dark;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-optical-sizing: auto;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; min-width: 320px; }
+      button, a { touch-action: manipulation; }
+      button { font: inherit; }
+      a { color: inherit; }
+      a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+      .skip-link { position: fixed; z-index: 20; top: .75rem; left: .75rem; padding: .75rem 1rem; transform: translateY(-160%); background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: .5rem; }
+      .skip-link:focus { transform: translateY(0); }
+      #stage { min-height: 100vh; padding-bottom: 7rem; background: var(--page); color: var(--text); }
+      #stage[data-theme="dark"] { color-scheme: dark; }
+      #stage[data-theme="light"] { color-scheme: light; }
+      .page { --page: #f3f5f8; --surface: #fff; --surface-alt: #e9edf3; --text: #172235; --muted: #536174; --line: #d5dce6; --accent: #2369d2; --accent-ink: #fff; --soft-accent: #e4edfc; --subtle: #748297; background: var(--page); color: var(--text); min-height: 100vh; }
+      .page[data-theme="dark"] { --page: #0e1420; --surface: #151e2c; --surface-alt: #1b2839; --text: #eef3fb; --muted: #a9b7c9; --line: #2a394d; --accent: #82b4ff; --accent-ink: #0c1625; --soft-accent: #1c304c; --subtle: #91a2b8; }
+      .page a { text-decoration-thickness: .08em; text-underline-offset: .2em; }
+      .site-header { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: var(--page); }
+      .header-inner { width: min(100% - 3rem, 1160px); min-height: 72px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; }
+      .identity { color: var(--text); font-size: .95rem; font-weight: 760; text-decoration: none !important; letter-spacing: -.02em; white-space: nowrap; }
+      .header-actions, .site-nav { display: flex; align-items: center; gap: 1rem; }
+      .site-nav a { color: var(--muted); font-size: .82rem; font-weight: 620; text-decoration: none; }
+      .site-nav a:hover { color: var(--accent); }
+      .theme-button, .menu-button { min-height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--text); cursor: pointer; }
+      .theme-button { padding: 0 .9rem; font-size: .8rem; font-weight: 650; }
+      .menu-button { display: none; padding: .55rem; }
+      .menu-glyph, .menu-glyph::before, .menu-glyph::after { display: block; width: 18px; height: 2px; margin: auto; border-radius: 4px; background: currentColor; content: ""; }
+      .menu-glyph::before { transform: translateY(-6px); }
+      .menu-glyph::after { transform: translateY(4px); }
+      .theme-button:active, .menu-button:active, .action:active { transform: scale(.97); }
+      .action { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .6rem; padding: .7rem 1rem; border: 1px solid var(--line); border-radius: .6rem; background: var(--surface); color: var(--text); font-size: .9rem; font-weight: 690; text-decoration: none; }
+      .action-primary { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+      .action:hover { border-color: var(--accent); }
+      .section { width: min(100% - 3rem, 1160px); margin-inline: auto; padding-block: clamp(3.5rem, 7vw, 6.5rem); scroll-margin-top: 92px; }
+      .section-kicker, .eyebrow { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .76rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+      .section-heading { margin: .65rem 0 2rem; font-size: clamp(1.8rem, 3.4vw, 2.65rem); line-height: 1.12; letter-spacing: -.035em; }
+      .section-intro { max-width: 66ch; color: var(--muted); line-height: 1.75; }
+      .body-copy { color: var(--muted); line-height: 1.75; }
+      .tag-list { display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: 1rem 0 0; list-style: none; }
+      .tag { max-width: 100%; padding: .35rem .6rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .74rem; overflow-wrap: anywhere; }
+      .project-card, .skill-card, .research-card, .timeline-card { min-width: 0; border: 1px solid var(--line); border-radius: .9rem; background: var(--surface); }
+      .project-card { padding: clamp(1.1rem, 2.5vw, 1.7rem); }
+      .project-card h3, .skill-card h3, .research-card h3, .timeline-card h3 { margin: 0 0 .7rem; font-size: 1.12rem; line-height: 1.35; letter-spacing: -.015em; overflow-wrap: anywhere; }
+      .project-card p, .skill-card p, .research-card p, .timeline-card p { color: var(--muted); line-height: 1.7; }
+      .field-list { display: grid; gap: .65rem; margin: 1.1rem 0 0; }
+      .field-list div { display: grid; grid-template-columns: minmax(7rem, .35fr) minmax(0, 1fr); gap: .75rem; border-top: 1px solid var(--line); padding-top: .65rem; }
+      .field-list dt { color: var(--subtle); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .73rem; text-transform: uppercase; letter-spacing: .05em; }
+      .field-list dd { margin: 0; color: var(--text); line-height: 1.55; overflow-wrap: anywhere; }
+      .placeholder { color: var(--muted); font-style: italic; }
+      .site-footer { width: min(100% - 3rem, 1160px); margin-inline: auto; padding: 1.5rem 0 2rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
+      .site-footer p { margin: .25rem 0; }
+
+      /* Infrastructure: structured systems map, dense metadata, technical frame. */
+      #stage[data-concept="infrastructure"] .page { --accent: #a5ceff; --accent-ink: #102035; --soft-accent: #1d334e; }
+      #stage[data-concept="infrastructure"] .page[data-theme="light"] { --page: #eef2f7; --surface: #fff; --surface-alt: #e2e9f2; --text: #18263a; --muted: #506176; --line: #cbd5e2; --accent: #145eae; --accent-ink: #fff; --soft-accent: #dceafb; --subtle: #718198; }
+      #stage[data-concept="infrastructure"] .page[data-theme="dark"] { --page: #0b1220; --surface: #111d2d; --surface-alt: #17273b; --text: #ecf3fc; --muted: #a7b8cc; --line: #293c53; --accent: #a5ceff; --accent-ink: #102035; --soft-accent: #1d334e; --subtle: #8fa4bd; }
+      #stage[data-concept="infrastructure"] .header-inner, #stage[data-concept="infrastructure"] .site-footer { width: min(100% - 3.5rem, 1280px); }
+      #stage[data-concept="infrastructure"] .section { width: min(100% - 3.5rem, 1280px); }
+      #stage[data-concept="infrastructure"] .site-header { border-bottom-style: dashed; }
+      #stage[data-concept="infrastructure"] .identity::before { content: "[ SYS ] "; color: var(--accent); font-family: ui-monospace, monospace; font-size: .76em; }
+      #stage[data-concept="infrastructure"] .hero { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(280px, .82fr); align-items: center; gap: clamp(2rem, 7vw, 7rem); padding-top: clamp(4rem, 9vw, 8rem); padding-bottom: clamp(4rem, 8vw, 7rem); }
+      #stage[data-concept="infrastructure"] .hero h1 { max-width: 11ch; margin: .8rem 0 1.2rem; font-size: clamp(3rem, 7vw, 6.4rem); line-height: .98; letter-spacing: -.065em; }
+      #stage[data-concept="infrastructure"] .hero-role { margin: 0; color: var(--accent); font-family: ui-monospace, monospace; font-size: clamp(1rem, 2vw, 1.25rem); }
+      #stage[data-concept="infrastructure"] .hero-copy { max-width: 58ch; color: var(--muted); line-height: 1.75; }
+      #stage[data-concept="infrastructure"] .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.7rem; }
+      #stage[data-concept="infrastructure"] .system-map { position: relative; padding: 1.1rem; border: 1px solid var(--line); border-radius: .8rem; background-color: var(--surface); background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 26px 26px; }
+      #stage[data-concept="infrastructure"] .map-caption { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; font-family: ui-monospace, monospace; font-size: .68rem; color: var(--muted); }
+      #stage[data-concept="infrastructure"] .map-nodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+      #stage[data-concept="infrastructure"] .map-node { display: grid; min-height: 80px; place-content: center; padding: .75rem; border: 1px solid var(--line); border-radius: .55rem; background: var(--surface); text-align: center; }
+      #stage[data-concept="infrastructure"] .map-node strong { font-family: ui-monospace, monospace; font-size: .8rem; }
+      #stage[data-concept="infrastructure"] .map-node small { margin-top: .3rem; color: var(--subtle); font-size: .7rem; }
+      #stage[data-concept="infrastructure"] .map-note { display: block; margin-top: .9rem; color: var(--subtle); font-size: .72rem; line-height: 1.5; }
+      #stage[data-concept="infrastructure"] .section-heading { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -.045em; }
+      #stage[data-concept="infrastructure"] .skills-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+      #stage[data-concept="infrastructure"] .skill-card { padding: 1rem; border-radius: .45rem; }
+      #stage[data-concept="infrastructure"] .skill-card h3 { font-family: ui-monospace, monospace; font-size: .94rem; }
+      #stage[data-concept="infrastructure"] .projects-list { display: grid; gap: 1rem; }
+      #stage[data-concept="infrastructure"] .project-card { display: grid; grid-template-columns: minmax(9rem, .34fr) minmax(0, 1fr); gap: 1.5rem; border-radius: .5rem; }
+      #stage[data-concept="infrastructure"] .project-index { color: var(--accent); font-family: ui-monospace, monospace; font-size: .76rem; }
+      #stage[data-concept="infrastructure"] .about-grid, #stage[data-concept="infrastructure"] .research-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      #stage[data-concept="infrastructure"] .research-card, #stage[data-concept="infrastructure"] .timeline-card { padding: 1.35rem; border-radius: .55rem; }
+      #stage[data-concept="infrastructure"] .timeline-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      #stage[data-concept="infrastructure"] .contact-panel { padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid var(--line); border-radius: .6rem; background: var(--surface-alt); }
+
+      /* Engineering Editorial: open measure, serif display type, sequential reading. */
+      #stage[data-concept="editorial"] .page { --page: #faf8f3; --surface: #fffdf8; --surface-alt: #f0ede5; --text: #28291f; --muted: #66665b; --line: #dfddd3; --accent: #9a4d35; --accent-ink: #fff; --soft-accent: #f3e7e0; --subtle: #858477; }
+      #stage[data-concept="editorial"] .page[data-theme="dark"] { --page: #181916; --surface: #20221e; --surface-alt: #292b25; --text: #f1efe7; --muted: #c0beb3; --line: #3b3d35; --accent: #e1a087; --accent-ink: #24140e; --soft-accent: #392a23; --subtle: #a6a497; }
+      #stage[data-concept="editorial"] .header-inner, #stage[data-concept="editorial"] .section, #stage[data-concept="editorial"] .site-footer { width: min(100% - 3rem, 980px); }
+      #stage[data-concept="editorial"] .site-header { border-bottom: 0; }
+      #stage[data-concept="editorial"] .header-inner { min-height: 82px; border-bottom: 1px solid var(--line); }
+      #stage[data-concept="editorial"] .identity { font-family: Georgia, "Times New Roman", serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -.04em; }
+      #stage[data-concept="editorial"] .site-nav { gap: 1.2rem; }
+      #stage[data-concept="editorial"] .site-nav a { font-weight: 520; }
+      #stage[data-concept="editorial"] .hero { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: end; gap: 2rem; padding-top: clamp(5rem, 12vw, 10rem); padding-bottom: clamp(4rem, 9vw, 8rem); }
+      #stage[data-concept="editorial"] .hero-main { grid-column: 1 / -1; max-width: 850px; }
+      #stage[data-concept="editorial"] .hero h1 { margin: .9rem 0 1.1rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(3.5rem, 10vw, 8.7rem); font-weight: 500; line-height: .91; letter-spacing: -.075em; }
+      #stage[data-concept="editorial"] .hero-role { margin: 0; color: var(--accent); font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 650; }
+      #stage[data-concept="editorial"] .hero-copy { max-width: 62ch; color: var(--muted); font-size: 1.08rem; line-height: 1.85; }
+      #stage[data-concept="editorial"] .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.6rem; }
+      #stage[data-concept="editorial"] .hero-aside { align-self: end; color: var(--subtle); font-family: ui-monospace, monospace; font-size: .72rem; line-height: 1.7; }
+      #stage[data-concept="editorial"] .section { padding-block: clamp(3rem, 6vw, 5rem); }
+      #stage[data-concept="editorial"] .section-heading { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.2rem, 4.7vw, 3.7rem); font-weight: 500; letter-spacing: -.055em; }
+      #stage[data-concept="editorial"] .section-kicker, #stage[data-concept="editorial"] .eyebrow { font-family: ui-sans-serif, system-ui, sans-serif; font-size: .72rem; letter-spacing: .12em; }
+      #stage[data-concept="editorial"] .about-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: 4rem; }
+      #stage[data-concept="editorial"] .about-side { color: var(--accent); font-family: Georgia, serif; font-size: 1.25rem; line-height: 1.5; }
+      #stage[data-concept="editorial"] .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 2.5rem; }
+      #stage[data-concept="editorial"] .skill-card { padding: 1.2rem 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+      #stage[data-concept="editorial"] .skill-card h3 { font-size: 1rem; }
+      #stage[data-concept="editorial"] .skill-card p { margin-bottom: .35rem; }
+      #stage[data-concept="editorial"] .projects-list { display: grid; gap: 1rem; }
+      #stage[data-concept="editorial"] .project-card { display: grid; grid-template-columns: minmax(8rem, .32fr) minmax(0, 1fr); gap: 2rem; padding: 1.5rem 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+      #stage[data-concept="editorial"] .project-index { color: var(--accent); font-family: Georgia, serif; font-size: 2rem; }
+      #stage[data-concept="editorial"] .project-card h3 { font-family: Georgia, serif; font-size: 1.5rem; font-weight: 500; }
+      #stage[data-concept="editorial"] .field-list div { grid-template-columns: minmax(7rem, .28fr) minmax(0, 1fr); }
+      #stage[data-concept="editorial"] .research-grid, #stage[data-concept="editorial"] .timeline-list { display: grid; grid-template-columns: 1fr; gap: 0; }
+      #stage[data-concept="editorial"] .research-card, #stage[data-concept="editorial"] .timeline-card { padding: 1.4rem 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; }
+      #stage[data-concept="editorial"] .contact-panel { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 1.5rem; padding: 1.6rem; border: 1px solid var(--line); background: var(--surface-alt); }
+
+      /* Hybrid Systems: asymmetrical split hero and paired editorial/technical project cards. */
+      #stage[data-concept="hybrid"] .page { --page: #f2f4ef; --surface: #fff; --surface-alt: #e7ece4; --text: #1c2927; --muted: #566763; --line: #d2dcd6; --accent: #ba542f; --accent-ink: #fff; --soft-accent: #f6e5dc; --subtle: #788782; }
+      #stage[data-concept="hybrid"] .page[data-theme="dark"] { --page: #111b1a; --surface: #192624; --surface-alt: #20312e; --text: #eff5f1; --muted: #b2c2bc; --line: #344844; --accent: #ff9b75; --accent-ink: #2b1710; --soft-accent: #3d2922; --subtle: #98aaa3; }
+      #stage[data-concept="hybrid"] .header-inner, #stage[data-concept="hybrid"] .section, #stage[data-concept="hybrid"] .site-footer { width: min(100% - 3.25rem, 1200px); }
+      #stage[data-concept="hybrid"] .identity { letter-spacing: -.045em; }
+      #stage[data-concept="hybrid"] .site-header { border-bottom-color: transparent; }
+      #stage[data-concept="hybrid"] .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); align-items: center; gap: clamp(2rem, 8vw, 8rem); padding-top: clamp(3rem, 7vw, 6.5rem); padding-bottom: clamp(4rem, 8vw, 7rem); }
+      #stage[data-concept="hybrid"] .hero h1 { max-width: 10ch; margin: .85rem 0 1rem; font-size: clamp(3.5rem, 8vw, 7.3rem); line-height: .93; letter-spacing: -.075em; }
+      #stage[data-concept="hybrid"] .hero-role { display: inline-block; margin: 0; padding: .42rem .62rem; border-radius: .25rem; background: var(--soft-accent); color: var(--accent); font-size: .91rem; font-weight: 740; }
+      #stage[data-concept="hybrid"] .hero-copy { max-width: 55ch; color: var(--muted); line-height: 1.75; }
+      #stage[data-concept="hybrid"] .hero-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+      #stage[data-concept="hybrid"] .capability-panel { position: relative; padding: clamp(1.2rem, 3vw, 2.2rem); border-radius: 1.2rem; background: var(--surface-alt); }
+      #stage[data-concept="hybrid"] .capability-panel::before { position: absolute; top: -10px; right: 22px; width: 42px; height: 20px; border-radius: 999px; background: var(--accent); content: ""; }
+      #stage[data-concept="hybrid"] .capability-panel h2 { margin: 0 0 1.3rem; font-size: .85rem; letter-spacing: .02em; }
+      #stage[data-concept="hybrid"] .capability-row { display: grid; grid-template-columns: 2.2rem 1fr; align-items: baseline; gap: .8rem; padding: .8rem 0; border-top: 1px solid var(--line); }
+      #stage[data-concept="hybrid"] .capability-row b { color: var(--accent); font-family: ui-monospace, monospace; font-size: .75rem; }
+      #stage[data-concept="hybrid"] .capability-row span { line-height: 1.4; }
+      #stage[data-concept="hybrid"] .hero-note { margin: 1rem 0 0; color: var(--subtle); font-size: .75rem; line-height: 1.5; }
+      #stage[data-concept="hybrid"] .section-heading { max-width: 14ch; font-size: clamp(2.1rem, 4vw, 3.2rem); }
+      #stage[data-concept="hybrid"] .about-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 8vw, 8rem); }
+      #stage[data-concept="hybrid"] .about-side { color: var(--accent); font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 680; line-height: 1.5; }
+      #stage[data-concept="hybrid"] .skills-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+      #stage[data-concept="hybrid"] .skill-card { padding: 1.15rem; border-radius: .45rem 1rem .45rem .45rem; }
+      #stage[data-concept="hybrid"] .skill-card:nth-child(2n) { background: var(--surface-alt); }
+      #stage[data-concept="hybrid"] .projects-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      #stage[data-concept="hybrid"] .project-card:first-child { grid-column: 1 / -1; display: grid; grid-template-columns: .6fr 1.4fr; gap: 2rem; background: var(--surface-alt); }
+      #stage[data-concept="hybrid"] .project-index { color: var(--accent); font-family: ui-monospace, monospace; font-size: .78rem; }
+      #stage[data-concept="hybrid"] .research-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 1rem; }
+      #stage[data-concept="hybrid"] .research-card, #stage[data-concept="hybrid"] .timeline-card { padding: 1.35rem; }
+      #stage[data-concept="hybrid"] .timeline-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      #stage[data-concept="hybrid"] .contact-panel { padding: clamp(1.4rem, 4vw, 2.7rem); border-radius: 1rem; background: var(--surface-alt); }
+
+      .contact-items { display: flex; flex-wrap: wrap; gap: .7rem 1.4rem; margin-top: 1.2rem; }
+      .contact-item { min-width: 0; color: var(--text); overflow-wrap: anywhere; }
+      .contact-item small { display: block; margin-bottom: .25rem; color: var(--subtle); font-family: ui-monospace, monospace; font-size: .69rem; text-transform: uppercase; letter-spacing: .06em; }
+      .contact-item span { display: block; }
+      .section-rule { border: 0; border-top: 1px solid var(--line); }
+      @media (hover: hover) and (pointer: fine) {
+        .action:hover, .theme-button:hover, .menu-button:hover { border-color: var(--accent); }
+        .project-card:hover, .skill-card:hover { border-color: var(--accent); }
+      }
+      @media (max-width: 900px) {
+        .header-inner { width: min(100% - 2rem, 1160px) !important; }
+        .section { width: min(100% - 2rem, 1160px) !important; }
+        .site-footer { width: min(100% - 2rem, 1160px) !important; }
+        .menu-button { display: inline-grid; place-items: center; }
+        .site-nav { position: absolute; top: calc(100% + 1px); left: 0; right: 0; display: none; align-items: stretch; gap: 0; padding: .5rem 1rem 1rem; border-bottom: 1px solid var(--line); background: var(--page); }
+        .site-nav[data-open="true"] { display: grid; }
+        .site-nav a { padding: .8rem .25rem; border-bottom: 1px solid var(--line); }
+        .header-actions { margin-left: auto; }
+        #stage[data-concept="infrastructure"] .hero, #stage[data-concept="hybrid"] .hero { grid-template-columns: minmax(0, 1fr); }
+        #stage[data-concept="infrastructure"] .system-map { max-width: 580px; }
+      }
+      @media (max-width: 640px) {
+        .header-inner { min-height: 64px; }
+        .site-nav { max-height: calc(100dvh - 70px); overflow-y: auto; }
+        .section { padding-block: 3.2rem; }
+        .hero { padding-top: 3.5rem !important; }
+        #stage[data-concept="infrastructure"] .skills-grid, #stage[data-concept="hybrid"] .skills-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        #stage[data-concept="infrastructure"] .project-card, #stage[data-concept="editorial"] .project-card, #stage[data-concept="hybrid"] .project-card:first-child { grid-template-columns: minmax(0, 1fr); gap: .7rem; }
+        #stage[data-concept="infrastructure"] .about-grid, #stage[data-concept="infrastructure"] .research-grid, #stage[data-concept="infrastructure"] .timeline-list, #stage[data-concept="editorial"] .about-grid, #stage[data-concept="editorial"] .skills-grid, #stage[data-concept="hybrid"] .about-grid, #stage[data-concept="hybrid"] .research-grid, #stage[data-concept="hybrid"] .timeline-list, #stage[data-concept="hybrid"] .projects-list { grid-template-columns: minmax(0, 1fr); }
+        #stage[data-concept="hybrid"] .project-card:first-child { grid-column: auto; }
+        #stage[data-concept="editorial"] .hero { grid-template-columns: minmax(0, 1fr); }
+        #stage[data-concept="editorial"] .hero-aside { grid-column: auto; }
+        #stage[data-concept="editorial"] .about-grid { gap: 1.2rem; }
+        .field-list div, #stage[data-concept="editorial"] .field-list div { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+        #stage[data-concept="editorial"] .contact-panel { grid-template-columns: minmax(0, 1fr); }
+        .action { min-height: 46px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+      }
+
+      /* Picker chrome: copied verbatim from prototype/PICKER.md. */
+      .proto-picker {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border-radius: 999px;
+        background: rgba(10, 10, 10, 0.82);
+        -webkit-backdrop-filter: blur(12px) saturate(1.4);
+        backdrop-filter: blur(12px) saturate(1.4);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+          0 8px 24px rgba(0, 0, 0, 0.24),
+          0 2px 6px rgba(0, 0, 0, 0.12);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 13px;
+        line-height: 1;
+        -webkit-font-smoothing: antialiased;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .proto-picker-highlight {
+        position: absolute;
+        top: 4px;
+        left: 0;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        will-change: transform;
+      }
+      .proto-picker[data-ready] .proto-picker-highlight {
+        transition:
+          transform 250ms cubic-bezier(0.23, 1, 0.32, 1),
+          width 250ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .proto-picker[data-ready] .proto-picker-highlight { transition: none; }
+      }
+      .proto-picker-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 28px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.55);
+        font: inherit;
+        cursor: pointer;
+        transition: color 150ms ease-out;
+      }
+      .proto-picker-item:hover { color: rgba(255, 255, 255, 0.85); }
+      .proto-picker-item:active { transform: scale(0.97); }
+      .proto-picker-item:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.4);
+        outline-offset: 2px;
+      }
+      .proto-picker-item[data-active] { color: #fff; }
+      .proto-picker-divider {
+        width: 1px;
+        height: 16px;
+        margin: 0 4px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .proto-picker-replay { padding: 0 10px; font-size: 14px; }
+      .proto-picker[data-position="top"] { bottom: auto; top: 24px; }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="stage" aria-live="off"></div>
+    <nav class="proto-picker" aria-label="Prototype variants">
+      <span class="proto-picker-highlight" aria-hidden="true"></span>
+      <button class="proto-picker-item" data-active aria-current="true" type="button">Infrastructure</button>
+      <button class="proto-picker-item" type="button">Editorial</button>
+      <button class="proto-picker-item" type="button">Hybrid Systems</button>
+    </nav>
+    <script>
+      const stage = document.getElementById('stage');
+      const picker = document.querySelector('.proto-picker');
+      const themeColor = document.querySelector('meta[name="theme-color"]');
+      const highlight = picker.querySelector('.proto-picker-highlight');
+      const items = [...picker.querySelectorAll('.proto-picker-item:not(.proto-picker-replay)')];
+      const concepts = ['infrastructure', 'editorial', 'hybrid'];
+      const nav = (id) => `
+        <header class="site-header">
+          <div class="header-inner">
+            <a class="identity" href="#top" aria-label="[Your Name], return to top">[Your Name]</a>
+            <nav class="site-nav" id="primary-navigation" aria-label="Main navigation">
+              <a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#research">Research</a><a href="#education">Education</a><a href="#contact">Contact</a>
+            </nav>
+            <div class="header-actions">
+              <button class="theme-button" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark theme">Dark mode</button>
+              <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="primary-navigation" aria-label="Open navigation"><span class="menu-glyph" aria-hidden="true"></span></button>
+            </div>
+          </div>
+        </header>`;
+      const project = (number, title) => `
+        <article class="project-card">
+          <div><span class="project-index">${number} / FEATURED PROJECT</span><p class="eyebrow">[Category]</p></div>
+          <div>
+            <h3>${title}</h3>
+            <p class="body-copy">A placeholder for the real problem, constraints, and context behind this project. Replace this copy with a concise account of what needed to change and why.</p>
+            <dl class="field-list">
+              <div><dt>Approach</dt><dd>[Technical approach and key engineering decisions]</dd></div>
+              <div><dt>Contribution</dt><dd>[Your specific contribution; clarify team context]</dd></div>
+              <div><dt>Stack</dt><dd>[Verified technologies used]</dd></div>
+              <div><dt>Evidence</dt><dd>[Repository URL] · [Demo URL if available]</dd></div>
+            </dl>
+          </div>
+        </article>`;
+      const skills = [
+        ['Infrastructure / Cloud', '[Platforms and infrastructure tools you can substantiate]'],
+        ['Linux / Operating Systems', '[Distributions, administration, and systems work]'],
+        ['Networking', '[Protocols, services, and network troubleshooting experience]'],
+        ['DevOps / CI/CD', '[Delivery workflows, automation, and infrastructure as code]'],
+        ['Programming / Automation', '[Languages and scripts used in real work]'],
+        ['Monitoring / Reliability', '[Observability, incident, and reliability practices]']
+      ];
+      const skillCards = () => skills.map(([title, copy]) => `<article class="skill-card"><h3>${title}</h3><p>${copy}</p></article>`).join('');
+      const commonSections = (concept) => `
+        <section class="section" id="about" aria-labelledby="about-title">
+          <p class="section-kicker">01 / About</p><h2 class="section-heading" id="about-title">Engineering with clarity and care.</h2>
+          <div class="about-grid">
+            ${concept === 'editorial' ? '<p class="about-side">A professional introduction, in your own words.</p>' : '<p class="eyebrow">PROFILE / PLACEHOLDER</p>'}
+            <div><p class="body-copy">[Write a brief introduction to your background, the systems you enjoy working with, and the kinds of engineering problems you want to take on.]</p><p class="body-copy"><strong>Technical interests</strong><br />[Infrastructure, automation, Linux, networking, delivery, reliability — keep only the interests that are genuinely yours.]</p><p class="body-copy"><strong>Career direction</strong><br />[Describe the DevOps Engineer / System Engineer role and environment you are seeking.]</p></div>
+          </div>
+        </section>
+        <section class="section" id="skills" aria-labelledby="skills-title">
+          <p class="section-kicker">02 / Capability areas</p><h2 class="section-heading" id="skills-title">Technical skills</h2>
+          <div class="skills-grid">${skillCards()}</div>
+        </section>
+        <section class="section" id="projects" aria-labelledby="projects-title">
+          <p class="section-kicker">03 / Selected work</p><h2 class="section-heading" id="projects-title">Featured projects</h2>
+          <p class="section-intro">Use each project to show the problem, your decisions, and your contribution. Add outcomes only when they are verified and attributable.</p>
+          <div class="projects-list">${project('01', '[Project Name]')}${project('02', '[Project Name]')}</div>
+        </section>
+        <section class="section" id="research" aria-labelledby="research-title">
+          <p class="section-kicker">04 / Inquiry</p><h2 class="section-heading" id="research-title">Research</h2>
+          <div class="research-grid">
+            <article class="research-card"><p class="eyebrow">[Status: e.g. in progress / published]</p><h3>[Research topic]</h3><p>[State the research objective and question.]</p><dl class="field-list"><div><dt>Objective</dt><dd>[Research objective]</dd></div><div><dt>Method</dt><dd>[Methodology, data, or evaluation approach]</dd></div><div><dt>Contribution</dt><dd>[Your contribution and collaborators, if applicable]</dd></div><div><dt>Resources</dt><dd>[Paper / poster / code URL]</dd></div></dl></article>
+            ${concept === 'hybrid' ? '<aside class="research-card"><p class="eyebrow">RESEARCH NOTE</p><h3>Make the work inspectable.</h3><p>Record status and link to the source material. Do not imply publication or completion before it is true.</p></aside>' : ''}
+          </div>
+        </section>
+        <section class="section" id="education" aria-labelledby="education-title">
+          <p class="section-kicker">05 / Background</p><h2 class="section-heading" id="education-title">Education &amp; experience</h2>
+          <div class="timeline-list">
+            <article class="timeline-card"><p class="eyebrow">[Year – Year]</p><h3>[Education / qualification]</h3><p>[Institution and relevant details. Include only confirmed information.]</p></article>
+            <article class="timeline-card"><p class="eyebrow">[Year – Year]</p><h3>[Role / experience]</h3><p>[Organization, scope, and responsibilities. Omit this entry if it does not apply.]</p></article>
+          </div>
+        </section>
+        <section class="section" id="contact" aria-labelledby="contact-title">
+          <div class="contact-panel"><div><p class="section-kicker">06 / Contact</p><h2 class="section-heading" id="contact-title">Start a conversation.</h2><p class="body-copy">[A short note about the conversations or opportunities you welcome.]</p></div>
+            <div class="contact-items"><div class="contact-item"><small>Email</small><span>[Email address]</span></div><div class="contact-item"><small>GitHub</small><span>[GitHub profile URL]</span></div><div class="contact-item"><small>LinkedIn</small><span>[LinkedIn profile URL]</span></div></div>
+          </div>
+        </section>
+        `;
+      const variants = [
+        () => `<div class="page" data-theme="${getTheme()}">${nav('infrastructure')}<main class="page-main" id="main-content">
+          <section class="section hero" id="top" aria-labelledby="hero-title"><div><p class="eyebrow">SYSTEMS / AUTOMATION / RELIABILITY</p><h1 id="hero-title">[Your Name]</h1><p class="hero-role">DevOps Engineer / System Engineer</p><p class="hero-copy">[A concise introduction to the systems you build, the work you do, and the engineering problems you want to solve.]</p><div class="hero-actions"><a class="action action-primary" href="#projects">Explore projects <span aria-hidden="true">↘</span></a><a class="action" href="#contact">Contact</a></div></div>
+            <aside class="system-map" aria-label="Illustrative map of technical focus areas"><div class="map-caption"><span>FOCUS MAP / 01</span><span>ILLUSTRATIVE</span></div><div class="map-nodes"><div class="map-node"><strong>INFRA</strong><small>cloud · systems</small></div><div class="map-node"><strong>DELIVERY</strong><small>automation · CI/CD</small></div><div class="map-node"><strong>NETWORK</strong><small>services · protocols</small></div><div class="map-node"><strong>RELIABILITY</strong><small>observability · ops</small></div></div><small class="map-note">Capability categories only — not live telemetry or a production architecture.</small></aside>
+          </section>${commonSections('infrastructure')}</main><footer class="site-footer"><p>[Your Name] · DevOps Engineer / System Engineer</p><p>Replace prototype placeholders with verified information.</p></footer></div>`,
+        () => `<div class="page" data-theme="${getTheme()}">${nav('editorial')}<main class="page-main" id="main-content">
+          <section class="section hero" id="top" aria-labelledby="hero-title"><div class="hero-main"><p class="eyebrow">PORTFOLIO · SYSTEMS ENGINEERING</p><h1 id="hero-title">[Your Name]</h1><p class="hero-role">DevOps Engineer / System Engineer</p><p class="hero-copy">[Introduce your professional direction in a few clear sentences. Focus on the systems, engineering values, and problems that matter to you.]</p><div class="hero-actions"><a class="action action-primary" href="#projects">Selected projects <span aria-hidden="true">↘</span></a><a class="action" href="#contact">Get in touch</a></div></div><aside class="hero-aside">A thoughtful record<br />of systems, research<br />and engineering work.</aside></section>${commonSections('editorial')}</main><footer class="site-footer"><p>[Your Name] · DevOps Engineer / System Engineer</p><p>Replace prototype placeholders with verified information.</p></footer></div>`,
+        () => `<div class="page" data-theme="${getTheme()}">${nav('hybrid')}<main class="page-main" id="main-content">
+          <section class="section hero" id="top" aria-labelledby="hero-title"><div><p class="eyebrow">ENGINEERING PORTFOLIO / PROFILE</p><h1 id="hero-title">[Your Name]</h1><p class="hero-role">DevOps Engineer / System Engineer</p><p class="hero-copy">[Your concise professional introduction. Describe the systems you care about and the direction you want to grow.]</p><div class="hero-actions"><a class="action action-primary" href="#projects">View selected work <span aria-hidden="true">↘</span></a><a class="action" href="#contact">Contact</a></div></div><aside class="capability-panel"><h2>AREAS OF PRACTICE</h2><div class="capability-row"><b>01</b><span>Infrastructure &amp; cloud</span></div><div class="capability-row"><b>02</b><span>Systems &amp; networking</span></div><div class="capability-row"><b>03</b><span>Automation &amp; delivery</span></div><div class="capability-row"><b>04</b><span>Observability &amp; reliability</span></div><p class="hero-note">Capability taxonomy for orientation; add only areas supported by your experience.</p></aside></section>${commonSections('hybrid')}</main><footer class="site-footer"><p>[Your Name] · DevOps Engineer / System Engineer</p><p>Replace prototype placeholders with verified information.</p></footer></div>`
+      ];
+      function readSession(key) { try { return sessionStorage.getItem(key); } catch { return null; } }
+      function writeSession(key, value) { try { sessionStorage.setItem(key, value); } catch { /* file:// storage can be unavailable; controls still work for this view. */ } }
+      function getTheme() { return readSession('portfolio-prototype-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); }
+      function syncThemeColor() {
+        const page = stage.querySelector('.page');
+        if (page) themeColor.content = getComputedStyle(page).getPropertyValue('--page').trim();
+      }
+      function moveHighlight() {
+        const el = items[current];
+        highlight.style.width = el.offsetWidth + 'px';
+        highlight.style.transform = `translateX(${el.offsetLeft}px)`;
+      }
+      function mount(i) {
+        stage.dataset.concept = concepts[i];
+        stage.dataset.theme = getTheme();
+        stage.innerHTML = variants[i]();
+        const page = stage.querySelector('.page');
+        page.dataset.theme = getTheme();
+        page.querySelector('.hero').setAttribute('tabindex', '-1');
+        syncThemeColor();
+        stage.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+          button.setAttribute('aria-pressed', String(getTheme() === 'dark'));
+          button.setAttribute('aria-label', `Switch to ${getTheme() === 'dark' ? 'light' : 'dark'} theme`);
+          button.textContent = getTheme() === 'dark' ? 'Light mode' : 'Dark mode';
+        });
+      }
+      let current = 0;
+      function setActive(i) {
+        if (i < 0 || i >= variants.length) return;
+        current = i;
+        items.forEach((el, j) => {
+          el.toggleAttribute('data-active', j === i);
+          if (j === i) { el.setAttribute('aria-current', 'true'); el.setAttribute('aria-pressed', 'true'); }
+          else { el.removeAttribute('aria-current'); el.setAttribute('aria-pressed', 'false'); }
+        });
+        moveHighlight();
+        writeSession('portfolio-prototype-variant', String(i + 1));
+        const url = new URL(location);
+        url.searchParams.set('v', i + 1);
+        try { history.replaceState(null, '', url); } catch { /* Some file:// browsers disallow History API URL updates. */ }
+        mount(i);
+      }
+      items.forEach((el, i) => el.addEventListener('click', () => setActive(i)));
+      window.addEventListener('resize', moveHighlight);
+      document.addEventListener('click', (event) => {
+        const themeButton = event.target.closest('[data-theme-toggle]');
+        if (themeButton) {
+          const theme = getTheme() === 'dark' ? 'light' : 'dark';
+          writeSession('portfolio-prototype-theme', theme);
+          stage.dataset.theme = theme;
+          stage.querySelectorAll('.page').forEach((page) => page.dataset.theme = theme);
+          syncThemeColor();
+          stage.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(theme === 'dark'));
+            button.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`);
+            button.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+          });
+        }
+        const menuButton = event.target.closest('[data-menu-toggle]');
+        if (menuButton) {
+          const menu = document.getElementById('primary-navigation');
+          const open = menuButton.getAttribute('aria-expanded') !== 'true';
+          menuButton.setAttribute('aria-expanded', String(open));
+          menuButton.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+          menu.dataset.open = String(open);
+        }
+        if (event.target.closest('.site-nav a')) {
+          const menu = document.getElementById('primary-navigation');
+          const button = stage.querySelector('[data-menu-toggle]');
+          if (menu && button) { menu.dataset.open = 'false'; button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-label', 'Open navigation'); }
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        const num = parseInt(e.key, 10);
+        if (num >= 1 && num <= variants.length) setActive(num - 1);
+        else if (e.key === 'ArrowRight') setActive((current + 1) % variants.length);
+        else if (e.key === 'ArrowLeft') setActive((current - 1 + variants.length) % variants.length);
+      });
+      const urlVariant = parseInt(new URLSearchParams(location.search).get('v'), 10);
+      const savedVariant = parseInt(readSession('portfolio-prototype-variant'), 10);
+      const initialVariant = Number.isInteger(urlVariant) && urlVariant >= 1 && urlVariant <= variants.length
+        ? urlVariant
+        : Number.isInteger(savedVariant) && savedVariant >= 1 && savedVariant <= variants.length ? savedVariant : 1;
+      setActive(initialVariant - 1);
+      requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+    </script>
+  </body>
+</html>
