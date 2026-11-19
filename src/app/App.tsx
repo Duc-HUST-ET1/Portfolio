@@ -1,5 +1,5 @@
-import { DesignSystemShowcase } from '../pages/DesignSystemShowcase';
+import { CoreLayoutPreview } from '../pages/CoreLayoutPreview';
 
 export function App() {
-  return <DesignSystemShowcase />;
+  return <CoreLayoutPreview />;
 }

@@ -5,6 +5,7 @@ import { ThemeProvider } from './app/providers/ThemeProvider';
 import './styles/tokens.css';
 import './styles/theme.css';
 import './styles/global.css';
+import './styles/layout.css';
 import './styles/showcase.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
