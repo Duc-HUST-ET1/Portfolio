@@ -1,19 +1,15 @@
 import { SiteLayout } from '../components/layout/SiteLayout';
-import { getAvailableNavigationItems, navigationConfiguration } from '../components/layout/navigation';
+import { navigationConfiguration, type NavigationItem } from '../components/layout/navigation';
 
-const previewNavigation = getAvailableNavigationItems(
-  navigationConfiguration.map(({ id }) => id),
-);
-
-export function CoreLayoutPreview() {
+export function CoreLayoutPreview({ navigationItems }: { navigationItems: NavigationItem[] }) {
   return (
-    <SiteLayout navigationItems={previewNavigation}>
+    <SiteLayout navigationItems={navigationItems}>
       <div className="layout-preview-banner" role="note">
         <span className="eyebrow">TEMPORARY PREVIEW / PHASE 3</span>
         <p>Structural layout preview. The labeled anchors below are placeholders, not portfolio content.</p>
       </div>
 
-      {previewNavigation.map(({ id, label }, index) => (
+      {navigationConfiguration.map(({ id, label }, index) => (
         <section
           className={`layout-preview-slot${id === 'home' ? ' layout-preview-home' : ''}`}
           id={id}

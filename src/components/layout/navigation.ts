@@ -15,9 +15,10 @@ export type NavigationItem = {
   label: string;
 };
 
+import type { ContentAvailability } from '../../features/contentAvailability/types';
+
 export function getAvailableNavigationItems(
-  availableIds: readonly SiteSectionId[],
+  availability: ContentAvailability,
 ): NavigationItem[] {
-  const available = new Set(availableIds);
-  return navigationConfiguration.filter(({ id }) => available.has(id));
+  return navigationConfiguration.filter(({ id }) => id === 'home' || availability[id]);
 }
