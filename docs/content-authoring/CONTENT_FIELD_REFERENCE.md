@@ -66,7 +66,7 @@ Profile is a single object, not a visibility-gated collection. All fields are op
 | `gallery` | `readonly ImageAsset[]` | Optional | Optional gallery metadata; the current homepage does not render the gallery. |
 | `links` | `readonly ExternalLink[]` | Optional | Optional verified HTTP(S) links. Link IDs are unique within this list. |
 | `featured` | `boolean` | Optional | Whether to place this project in the featured group. |
-| `featuredOrder` | `number` | Optional | Non-negative integer, unique among featured projects; invalid without `featured: true`. |
+| `featuredOrder` | `number` | Optional | If supplied, must be a non-negative integer, requires `featured: true`, and must be unique among featured projects with a supplied order. It is not required when `featured: true`; omission does not make a project non-featured. |
 | `startDate` | `string` | Optional | Real calendar date in `YYYY-MM-DD`. |
 | `endDate` | `string` | Optional | Real calendar date; if both dates exist, cannot precede start. |
 | `status` | `'planned' \| 'in-progress' \| 'completed' \| 'archived'` | Optional | Project lifecycle label; validator checks the union. |
@@ -75,7 +75,7 @@ Profile is a single object, not a visibility-gated collection. All fields are op
 | `relatedResearchIds` | `readonly string[]` | Optional | References `ResearchItem.id`; validator checks existence. |
 | `relatedProjectIds` | `readonly string[]` | Optional | References other `Project.id` values; validator checks existence. |
 
-Published project completeness is checked by `selectPublishedProjects` and validator. Featured records sort by `featuredOrder`, then ID. Non-featured projects retain content-module order on Home.
+Published project completeness is checked by `selectPublishedProjects` and validator. `featured: true` selects a published project into the featured group. That group sorts by ascending `featuredOrder`; projects with no order follow ordered projects. ID ascending breaks equal-order ties and sorts projects with no order. The validator rejects duplicate defined orders, so equal defined orders are only a defensive selector tie case. Non-featured projects retain content-module order on Home.
 
 ## Project Category (`src/features/projects/types.ts`)
 

@@ -39,7 +39,7 @@ const profileExample: Profile = {};
 - Slugs use lowercase letters/numbers separated by single hyphens and must be unique.
 - A published project must have a non-empty title and short description. Drafts may be incomplete, but IDs, slugs, references, URLs and any supplied fields are still validated.
 - `categoryId` refers to a `ProjectCategory.id`. Related IDs refer to project or research IDs. Avoid self/cyclic relationships unless the connection is meaningful.
-- Featured order is a unique, non-negative integer and is allowed only when `featured: true`. Featured cards appear first by `featuredOrder`, then ID; other projects follow content-module order.
+- `featured: true` places a published project in the featured group; `featuredOrder` is optional and its absence does not make the project non-featured. When present, `featuredOrder` must be a non-negative integer, is valid only with `featured: true`, and must be unique among featured projects that provide an order. Featured projects sort by ascending `featuredOrder`; projects without one come after projects with an order. ID ascending breaks equal-order ties and orders projects whose `featuredOrder` is absent. Validation rejects duplicate defined orders, so equal defined orders are only a defensive selector tie case. Non-featured projects retain content-module order.
 - Dates use real `YYYY-MM-DD` dates; if both are set, start must not be later than end. `status`: `planned`, `in-progress`, `completed`, `archived`.
 - `links` use `ExternalLink`; only absolute HTTP(S) URLs are accepted. Images use `ImageAsset`.
 - Technologies and tags are plain string arrays, not ratings. Omit empty items. The homepage does not add filters from them.

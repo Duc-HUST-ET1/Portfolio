@@ -20,7 +20,7 @@ The Profile object is not visibility-gated. Treat every populated Profile field 
 
 ## Sorting and relationships
 
-- Featured projects come first by unique `featuredOrder`, with IDs breaking ties if order is absent; non-featured projects follow module order.
+- `featured: true` selects a published project into the featured group; `featuredOrder` is optional and its absence does not make a project non-featured. Featured projects sort by ascending `featuredOrder`, with projects lacking an order after those that have one. ID ascending breaks equal-order ties and orders projects with no order. Validation requires each supplied order to be a non-negative integer, allows it only with `featured: true`, and rejects duplicate defined orders among featured projects. Thus equal defined orders are only a defensive selector tie case. Non-featured projects retain content-module order.
 - Skills and skill categories sort by optional `order`, then ID. Social links sort the same way.
 - Research, Education, Experience and non-featured projects retain module order. Arrange those records intentionally in their content files.
 - Project categories have an `order` field, but no current project-category listing consumes it.
