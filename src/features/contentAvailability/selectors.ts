@@ -9,7 +9,9 @@ import type { ContentAvailability } from './types';
 
 export function selectContentAvailability(content: PortfolioContent): ContentAvailability {
   const profile = content.profile;
-  const hasAbout = [profile.name, profile.headline, profile.shortIntroduction, profile.biography, profile.location]
+  // Identity and metadata belong in the hero; About needs actual introductory prose.
+  // shortIntroduction is already presented in the Hero; About owns the longer biography.
+  const hasAbout = [profile.biography]
     .some((value) => typeof value === 'string' && value.trim().length > 0);
   return {
     home: true,

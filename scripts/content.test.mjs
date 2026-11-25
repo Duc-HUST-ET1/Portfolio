@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { createServer } from 'vite';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 let vite;
 let projects;
@@ -9,6 +10,8 @@ let research;
 let availability;
 let validation;
 let registry;
+let homepage;
+let navigation;
 
 before(async () => {
   vite = await createServer({ configFile: false, appType: 'custom', server: { middlewareMode: true, hmr: false } });
@@ -18,6 +21,8 @@ before(async () => {
   availability = await vite.ssrLoadModule('/src/features/contentAvailability/selectors.ts');
   validation = await vite.ssrLoadModule('/src/content/validate.ts');
   registry = await vite.ssrLoadModule('/src/content/index.ts');
+  homepage = await vite.ssrLoadModule('/src/pages/HomePage.tsx');
+  navigation = await vite.ssrLoadModule('/src/components/layout/navigation.ts');
 });
 
 after(async () => { await vite?.close(); });
@@ -68,6 +73,88 @@ test('research, category and content availability selectors use published meanin
     socialLinks: [{ id: 'unsafe', platform: 'other', label: 'Unsafe', href: 'javascript:alert(1)', visibility: 'published' }],
   }).contact, false);
 });
+
+test('about availability requires profile prose instead of identity metadata', () => {
+  assert.equal(availability.selectContentAvailability({ ...emptyContent, profile: { name: 'Verified Name', headline: 'Verified Role', location: 'Verified Place' } }).about, false);
+  assert.equal(availability.selectContentAvailability({ ...emptyContent, profile: { shortIntroduction: 'Shown in Hero.' } }).about, false);
+  assert.equal(availability.selectContentAvailability({ ...emptyContent, profile: { biography: 'Verified biography.' } }).about, true);
+});
+
+test('homepage renders only Home with an empty registry and keeps navigation targets valid', () => {
+  const selected = availability.selectContentAvailability(emptyContent);
+  const markup = renderToStaticMarkup(ReactElement(homepage.HomePage({ content: emptyContent, availability: selected })));
+  const nav = navigation.getAvailableNavigationItems(selected);
+  assert.match(markup, /id="home"/);
+  assert.match(markup, />Portfolio</);
+  assert.doesNotMatch(markup, /id="(about|skills|projects|research|experience|contact)"/);
+  for (const item of nav) assert.match(markup, new RegExp(`id="${item.id}"`));
+  assert.deepEqual(nav.map(({ id }) => id), ['home']);
+});
+
+test('homepage renders multiple published records, hides drafts, and omits invalid optional links', () => {
+  const content = {
+    ...emptyContent,
+    profile: { name: 'Verified Name', shortIntroduction: 'Verified introduction.' },
+    projects: [
+      { id: 'p1', slug: 'one', title: 'Project One', shortDescription: 'Summary one', visibility: 'published', featured: true },
+      { id: 'p2', slug: 'two', title: 'Project Two', shortDescription: 'Summary two', visibility: 'published', links: [{ id: 'unsafe', label: 'Unsafe', href: 'javascript:alert(1)', kind: 'other' }] },
+      { id: 'draft', slug: 'draft', title: 'Draft Project', shortDescription: 'Hidden', visibility: 'draft' },
+    ],
+    skillCategories: [
+      { id: 'systems', title: 'Systems category', visibility: 'published', order: 1 },
+      { id: 'delivery', title: 'Delivery category', visibility: 'published', order: 2 },
+    ],
+    skills: [
+      { id: 's1', name: 'Verified Skill One', visibility: 'published', categoryId: 'systems' },
+      { id: 's2', name: 'Verified Skill Two', visibility: 'published', categoryId: 'delivery' },
+      { id: 'sd', name: 'Draft Skill', visibility: 'draft' },
+    ],
+    research: [
+      { id: 'r1', title: 'Verified Research One', visibility: 'published', publication: { venue: 'Verified venue' }, relatedProjectIds: ['p1'] },
+      { id: 'r2', title: 'Verified Research Two', visibility: 'published' },
+      { id: 'rd', title: 'Draft Research', visibility: 'draft' },
+    ],
+    experience: [
+      { id: 'e1', organization: 'Verified Org', role: 'Verified Role', visibility: 'published', startDate: '2025-01-01', endDate: null },
+      { id: 'e2', organization: 'Another Verified Org', role: 'Another Verified Role', visibility: 'published' },
+      { id: 'ed', organization: 'Draft Org', role: 'Draft Role', visibility: 'draft' },
+    ],
+    education: [
+      { id: 'edu1', institution: 'Verified Institution One', program: 'Verified Program One', visibility: 'published', endDate: null },
+      { id: 'edu2', institution: 'Verified Institution Two', program: 'Verified Program Two', visibility: 'published' },
+    ],
+    socialLinks: [
+      { id: 'social1', platform: 'website', label: 'Verified website', href: 'https://example.com', visibility: 'published', target: 'new-tab' },
+      { id: 'social2', platform: 'email', label: 'Verified email', href: 'mailto:owner@example.com', visibility: 'published' },
+      { id: 'social-draft', platform: 'other', label: 'Draft social', href: 'https://example.org', visibility: 'draft' },
+      { id: 'social-empty-mail', platform: 'email', label: 'Invalid email', href: 'mailto:', visibility: 'published' },
+    ],
+  };
+  const selected = availability.selectContentAvailability(content);
+  const markup = renderToStaticMarkup(ReactElement(homepage.HomePage({ content, availability: selected })));
+  const nav = navigation.getAvailableNavigationItems(selected);
+  assert.match(markup, /Project One/);
+  assert.match(markup, /Project Two/);
+  assert.match(markup, /Verified Skill One/);
+  assert.match(markup, /Verified Skill Two/);
+  assert.match(markup, /Systems category/);
+  assert.match(markup, /Delivery category/);
+  assert.match(markup, /Verified Research One/);
+  assert.match(markup, /Verified Research Two/);
+  assert.match(markup, /Related projects: Project One/);
+  assert.match(markup, /Verified Program One/);
+  assert.match(markup, /Verified Program Two/);
+  assert.match(markup, /Another Verified Role/);
+  assert.match(markup, /Verified website/);
+  assert.match(markup, /Verified email/);
+  assert.match(markup, /Present/);
+  assert.doesNotMatch(markup, /Draft Project|Draft Skill|Draft Research|Draft Org|Draft social|Invalid email|javascript:alert/);
+  assert.match(markup, /rel="noopener noreferrer"/);
+  for (const item of nav) assert.match(markup, new RegExp(`id="${item.id}"`));
+  assert.doesNotMatch(markup, /href="javascript:/);
+});
+
+function ReactElement(element) { return element; }
 
 test('integrity validation reports duplicate identifiers, unsafe URLs, missing references and date errors', () => {
   const content = {

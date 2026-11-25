@@ -1,9 +1,10 @@
 import type { SocialLink } from './types';
+import { isSafeExternalHref } from '../shared/links';
 
 function hasSafeHref(link: SocialLink) {
   try {
     const url = new URL(link.href);
-    return url.protocol === 'https:' || url.protocol === 'http:' || (link.platform === 'email' && url.protocol === 'mailto:');
+    return (url.protocol === 'https:' || url.protocol === 'http:' || (link.platform === 'email' && url.protocol === 'mailto:')) && isSafeExternalHref(link.href);
   } catch { return false; }
 }
 

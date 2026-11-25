@@ -9,7 +9,7 @@ export function SiteFooter({ children }: SiteFooterProps) {
     <footer className="site-footer">
       <div className="site-container site-footer-inner">
         <span className="site-footer-brand">Systems / Portfolio</span>
-        {children ?? <span className="site-footer-note">Temporary layout preview · portfolio content not added</span>}
+        {children}
       </div>
     </footer>
   );
