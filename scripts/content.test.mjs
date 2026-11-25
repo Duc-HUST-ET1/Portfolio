@@ -14,7 +14,7 @@ let homepage;
 let navigation;
 
 before(async () => {
-  vite = await createServer({ configFile: false, appType: 'custom', server: { middlewareMode: true, hmr: false } });
+  vite = await createServer({ configFile: false, appType: 'custom', server: { middlewareMode: true, hmr: false, ws: false } });
   projects = await vite.ssrLoadModule('/src/features/projects/selectors.ts');
   skills = await vite.ssrLoadModule('/src/features/skills/selectors.ts');
   research = await vite.ssrLoadModule('/src/features/research/selectors.ts');
@@ -33,7 +33,8 @@ const emptyContent = {
 };
 
 test('empty registry and selectors are safe; home remains available', () => {
-  assert.deepEqual(registry.portfolioContent.projects, []);
+  assert.deepEqual(registry.portfolioContent, emptyContent);
+  assert.equal(Object.hasOwn(registry, 'templateContent'), false);
   assert.deepEqual(projects.selectPublishedProjects([]), []);
   assert.deepEqual(projects.selectFeaturedProjects([]), []);
   assert.deepEqual(skills.selectPublishedSkills([]), []);
@@ -152,6 +153,54 @@ test('homepage renders multiple published records, hides drafts, and omits inval
   assert.match(markup, /rel="noopener noreferrer"/);
   for (const item of nav) assert.match(markup, new RegExp(`id="${item.id}"`));
   assert.doesNotMatch(markup, /href="javascript:/);
+});
+
+test('many project records render from data without fixed-count assumptions', () => {
+  const records = Array.from({ length: 40 }, (_, index) => ({
+    id: `project-${index}`,
+    slug: `project-${index}`,
+    title: `Project ${index}`,
+    shortDescription: `Summary ${index}`,
+    visibility: 'published',
+  }));
+  const content = { ...emptyContent, projects: records };
+  const selected = availability.selectContentAvailability(content);
+  const markup = renderToStaticMarkup(ReactElement(homepage.HomePage({ content, availability: selected })));
+  assert.equal((markup.match(/<article class="project-card/g) ?? []).length, records.length);
+});
+
+test('validator catches malformed visibility, published records, link metadata, and image paths', () => {
+  const issues = validation.validatePortfolioContent({
+    ...emptyContent,
+    profile: { name: '  ' },
+    projectCategories: [{ id: 'category', title: ' ', visibility: 'published' }],
+    projects: [{
+      id: 'project', slug: 'good-slug', title: 'Project', shortDescription: 'Summary', visibility: 'public',
+      tags: ['  '],
+      coverImage: { src: '//assets.example/image.png', alt: 'Image', width: 0 },
+      links: [{ id: 'repo', label: ' ', href: 'https://example.com', kind: 'github' }],
+    }],
+    skills: [{ id: 'skill', name: 'Skill', visibility: 'hidden' }],
+    research: [{ id: 'research', title: 'Research', visibility: 'published' }],
+    education: [{ id: 'education', institution: ' ', program: ' ', visibility: 'published' }],
+    experience: [{ id: 'experience', organization: ' ', role: ' ', visibility: 'published' }],
+    socialLinks: [{ id: 'email', platform: 'email', label: 'Email', href: 'mailto:', visibility: 'published', order: -1 }],
+  });
+  const byPath = new Map(issues.map(({ code, path }) => [`${code}:${path}`, true]));
+  for (const expected of [
+    'invalid-visibility:projects[0].visibility',
+    'empty-value:profile.name',
+    'empty-value:projects[0].tags[0]',
+    'invalid-visibility:skills[0].visibility',
+    'incomplete-published-record:projectCategories[0].title',
+    'empty-link-label:projects[0].links[0].label',
+    'invalid-image-path:projects[0].coverImage.src',
+    'invalid-image-dimensions:projects[0].coverImage.width',
+    'incomplete-published-record:education[0]',
+    'incomplete-published-record:experience[0]',
+    'invalid-url:socialLinks[0].href',
+    'invalid-order:socialLinks[0].order',
+  ]) assert.ok(byPath.has(expected), `Expected ${expected}`);
 });
 
 function ReactElement(element) { return element; }
